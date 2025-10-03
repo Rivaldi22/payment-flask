@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Pembayaran</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>Form Pembayaran</h2>
+    <form action="/pay" method="post">
+      <label>Nama:</label>
+      <input type="text" name="name" required>
+
+      <label>Email:</label>
+      <input type="email" name="email" required>
+
+      <label>Jumlah (IDR):</label>
+      <input type="number" name="amount" step="0.01" min="0.01" required>
+
+      <label>No. Kartu (simulasi):</label>
+      <input type="text" name="card_number" required>
+
+      <label>Expiry:</label>
+      <input type="text" name="expiry" placeholder="MM/YY" required>
+
+      <label>CVV:</label>
+      <input type="text" name="cvv" required>
+
+      <button type="submit">Bayar</button>
+    </form>
+    <p class="note">Catatan: ini hanya simulasi, bukan pembayaran nyata.</p>
+  </div>
+</body>
+</html>

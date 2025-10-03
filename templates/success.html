@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembayaran Berhasil</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      padding: 20px;
+      transition: background 0.4s, color 0.4s;
+      text-align: center;
+    }
+
+    .dark-mode {
+      background: #111827;
+      color: #f3f4f6;
+    }
+
+    h1 {
+      color: #16a34a;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+
+    .dark-mode .card {
+      background: #1f2937;
+      box-shadow: 0 4px 10px rgba(255,255,255,0.05);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 8px 0;
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .dark-mode li {
+      border-bottom: 1px solid #374151;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      background: #3b82f6;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+    }
+
+    .dark-mode .btn {
+      background: #2563eb;
+    }
+
+    /* Toggle dark mode button */
+    .toggle-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #f3f4f6;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode .toggle-btn {
+      background: #374151;
+      color: #f9fafb;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dark mode toggle -->
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙</button>
+
+  <h1>Pembayaran Berhasil ✅</h1>
+  <p>Terima kasih, <b>{{ tx.customer_name }}</b>.</p>
+
+  <div class="card">
+    <ul>
+      <li><b>ID Transaksi:</b> {{ tx.id }}</li>
+      <li><b>Email:</b> {{ tx.customer_email }}</li>
+      <li><b>Jumlah:</b> Rp {{ "{:,.0f}".format(tx.amount) }}</li>
+      <li><b>Status:</b> {{ tx.status }}</li>
+      <li><b>Waktu:</b> {{ tx.created_at }}</li>
+    </ul>
+  </div>
+
+  <a href="/" class="btn">← Kembali ke Form Pembayaran</a>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      let btn = document.querySelector(".toggle-btn");
+      if (document.body.classList.contains("dark-mode")) {
+        btn.textContent = "☀️";
+      } else {
+        btn.textContent = "🌙";
+      }
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    }
+
+    // Load preferensi dark mode
+    window.onload = () => {
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        document.querySelector(".toggle-btn").textContent = "☀️";
+      }
+    };
+  </script>
+</body>
+</html>

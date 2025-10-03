@@ -1,0 +1,85 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f9fc;
+  padding: 30px;
+}
+.container {
+  max-width: 400px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  background: #1d72ff;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.note {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #666;
+}
+/* Flash messages */
+.flash-container {
+  max-width: 600px;
+  margin: 15px auto;
+  padding: 0 15px;
+}
+
+.flash-message {
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.flash-success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.flash-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.flash-warning {
+  background: #fef9c3;
+  color: #92400e;
+  border: 1px solid #fde047;
+}
+
+.flash-info {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(-5px);}
+  to {opacity: 1; transform: translateY(0);}
+}

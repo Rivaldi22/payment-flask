@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      padding: 20px;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    .dark-mode {
+      background: #111827;
+      color: #f3f4f6;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    p {
+      text-align: center;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 20px auto;
+      max-width: 1000px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+    }
+
+    thead {
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f3f4f6;
+    }
+
+    tbody tr:hover {
+      background: #e0f2fe;
+    }
+
+    .dark-mode thead {
+      background: #2563eb;
+    }
+
+    .dark-mode tbody tr:nth-child(even) {
+      background: #1f2937;
+    }
+
+    .dark-mode tbody tr:hover {
+      background: #374151;
+    }
+
+    .status-success {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .status-failed {
+      color: #dc2626;
+      font-weight: bold;
+    }
+
+    .actions {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      transition: 0.3s;
+    }
+
+    .btn-blue { background: #3b82f6; }
+    .btn-blue:hover { background: #2563eb; }
+
+    .btn-green { background: #16a34a; }
+    .btn-green:hover { background: #15803d; }
+
+    .btn-red { background: #dc2626; }
+    .btn-red:hover { background: #b91c1c; }
+
+    .dark-mode .btn-blue { background: #2563eb; }
+    .dark-mode .btn-green { background: #15803d; }
+    .dark-mode .btn-red { background: #b91c1c; }
+
+    /* Toggle dark mode button */
+    .toggle-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #f3f4f6;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode .toggle-btn {
+      background: #374151;
+      color: #f9fafb;
+    }
+
+    /* Chart container */
+    .charts {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    .chart-box {
+      width: 45%;
+      min-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dark mode toggle -->
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙</button>
+
+  <h1>Dashboard Admin</h1>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Email</th>
+          <th>Jumlah (Rp)</th>
+          <th>Status</th>
+          <th>Waktu</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tx in transactions %}
+        <tr>
+          <td>{{ tx.customer_name }}</td>
+          <td>{{ tx.customer_email }}</td>
+          <td>{{ "{:,.0f}".format(tx.amount) }}</td>
+          <td class="status-{{ tx.status }}">{{ tx.status }}</td>
+          <td>{{ tx.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">Belum ada transaksi.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+<div class="actions">
+    <a href="/" class="btn btn-blue">← Kembali ke Form Pembayaran</a>
+    <a href="{{ url_for('register_admin') }}" class="btn btn-green">Tambah Admin Baru</a>
+    <a href="{{ url_for('logout') }}" class="btn btn-red">Logout</a>
+  </div>
+  <!-- Grafik -->
+  <div class="charts">
+    <div class="chart-box">
+      <canvas id="statusChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <canvas id="amountChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      let btn = document.querySelector(".toggle-btn");
+      if (document.body.classList.contains("dark-mode")) {
+        btn.textContent = "☀️";
+      } else {
+        btn.textContent = "🌙";
+      }
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    }
+
+    // Load preferensi dark mode
+    window.onload = () => {
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        document.querySelector(".toggle-btn").textContent = "☀️";
+      }
+    };
+
+    // ===== ChartJS =====
+    const transactions = JSON.parse('{{ transactions|tojson|safe }}');
+    const statusCounts = { success: 0, failed: 0 };
+    let totalSuccess = 0, totalFailed = 0;
+
+    transactions.forEach(tx => {
+      const amount = Number(tx.amount) || 0;
+      if (tx.status === "success") {
+        statusCounts.success++;
+        totalSuccess += amount;
+      } else if (tx.status === "failed") {
+        statusCounts.failed++;
+        totalFailed += amount;
+      }
+    });
+
+    // Chart jumlah transaksi
+    new Chart(document.getElementById("statusChart"), {
+      type: "bar",
+      data: {
+        labels: ["Sukses", "Gagal"],
+        datasets: [{
+          label: "Jumlah Transaksi",
+          data: [statusCounts.success, statusCounts.failed],
+          backgroundColor: ["#16a34a", "#dc2626"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    // Chart nominal transaksi
+    new Chart(document.getElementById("amountChart"), {
+      type: "pie",
+      data: {
+        labels: ["Total Sukses", "Total Gagal"],
+        datasets: [{
+          data: [totalSuccess, totalFailed],
+          backgroundColor: ["#3b82f6", "#f59e0b"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { 
+          legend: { position: "bottom" },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let value = context.raw || 0;
+                return "Rp " + value.toLocaleString("id-ID");
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
