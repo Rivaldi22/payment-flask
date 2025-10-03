@@ -13,7 +13,7 @@ Aplikasi pembayaran sederhana berbasis Flask dan MySQL.
 ## Screenshot Aplikasi
 
 ### Halaman Login
-![Login Page](screenshots/Screenshot-login.png)
+![Login Page](payment-flask/screenshots/Screenshot-login.png)
 
 ### Dashboard Admin
 ![Dashboard Admin](screenshots/Screenshot-dashboard.png)
